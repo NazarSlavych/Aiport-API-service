@@ -1,6 +1,16 @@
+import os
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+
+
+def airplane_image_file_path(instance, filename):
+    ext = os.path.splitext(filename)[1]
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{ext}"
+    return os.path.join("uploads/airplanes/", filename)
 
 
 class Crew(models.Model):
@@ -45,6 +55,7 @@ class Airplane(models.Model):
     rows = models.PositiveIntegerField()
     seats_in_row = models.PositiveIntegerField()
     airplane_type = models.ForeignKey(AirplaneType, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=airplane_image_file_path, null=True, blank=True)
 
     def __str__(self):
         return self.name
